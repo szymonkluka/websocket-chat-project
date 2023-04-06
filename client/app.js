@@ -4,7 +4,7 @@ const messagesList = document.getElementById("messages-list");
 const addMessageForm = document.getElementById("add-messages-form");
 const userNameInput = document.getElementById("username");
 const messageContentInput = document.getElementById("message-content");
-
+const socket = io();
 let userName = "";
 
 function login(event) {
@@ -26,20 +26,27 @@ function addMessage(author, content) {
   }
   message.innerHTML = ` <h3 class="message__author">${author === userName ? 'You' : author
     }</h3>
-    <div class="message__content">${content}</div>`;
+    <div class="message__content">${content}</div>`
+
   messagesList.appendChild(message);
 };
 
-function sendMessage(event) {
-  event.preventDefault();
-  const messageContent = messageContentInput.value;
-  if (!messageContent) {
-    alert("Please enter a message");
-    return;
+function sendMessage(e) {
+  e.preventDefault();
+
+  let messageContent = messageContentInput.value;
+
+  if (!messageContent.length) {
+    alert('You have to type something!');
   }
-  addMessage(userName, messageContent);
-  messageContentInput.value = '';
+  else {
+    addMessage(userName, messageContent);
+    socket.emit('message', { author: userName, content: messageContent })
+    messageContentInput.value = '';
+  }
+
 }
 
+socket.on('message', ({ author, content }) => addMessage(author, content))
 loginForm.addEventListener('submit', login);
 addMessageForm.addEventListener('submit', sendMessage);

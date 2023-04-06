@@ -12,7 +12,8 @@
   "dependencies": {
     "express": "4.17.1",
     "gitignore": "^0.7.0",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "socket.io": "2.2.0"
   },
   "description": "websocket_chat_project",
   "keywords": [
