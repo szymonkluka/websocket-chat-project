@@ -13,10 +13,12 @@ function login(event) {
     alert("Please enter a username");
   } else {
     userName = userNameInput.value;
+    socket.emit('join', userName);
     loginForm.classList.remove("show");
     messagesSection.classList.add("show");
   }
 }
+
 function addMessage(author, content) {
   const message = document.createElement('li');
   message.classList.add('message');

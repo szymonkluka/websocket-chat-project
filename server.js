@@ -15,14 +15,33 @@ const server = app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
 
-const io = socket(server)
+const io = socket(server);
 const messages = [];
+const users = [];
 
 io.on('connection', (socket) => {
   console.log('New client! Its id – ' + socket.id);
-  socket.on('message', () => { console.log('Oh, I\'ve got something from ' + socket.id) });
-  socket.on('disconnect', () => { console.log('Oh, socket ' + socket.id + ' has left') });
+
+  socket.on('join', (name) => {
+    console.log(name + ' has joined with socket id ' + socket.id);
+    users.push({ name: name, id: socket.id });
+    console.log(users);
+    io.emit('users', users);
+  });
+
+  socket.on('disconnect', () => {
+    console.log('Oh, socket ' + socket.id + ' has left');
+    const index = users.findIndex((user) => user.id === socket.id);
+    if (index !== -1) {
+      const name = users[index].name;
+      users.splice(index, 1);
+      io.emit('users', users);
+      console.log(name + ' has disconnected');
+    }
+  });
+
   console.log('I\'ve added a listener on message event \n');
+
   socket.on('message', (message) => {
     console.log("Oh, I've got something from " + socket.id);
     messages.push(message);
