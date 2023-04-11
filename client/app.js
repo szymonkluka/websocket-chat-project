@@ -68,7 +68,7 @@ socket.on('removeUser', ({ author, userName }) => {
     return;
   }
 
-  const message = `${author} has left the conversation... :(`;
+  const message = `${userName} has left the conversation... :(`;
   addMessage('Chat Bot', message, true);
 });
 
