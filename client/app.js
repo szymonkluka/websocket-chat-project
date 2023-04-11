@@ -19,12 +19,16 @@ function login(event) {
   }
 }
 
-function addMessage(author, content) {
+function addMessage(author, content, isBot = false) {
   const message = document.createElement('li');
   message.classList.add('message');
   message.classList.add('message--received');
   if (author === userName) {
     message.classList.add('message--self');
+  }
+  if (isBot) {
+    message.classList.add('message--bot');
+    author = 'Chat Bot';
   }
   message.innerHTML = ` <h3 class="message__author">${author === userName ? 'You' : author
     }</h3>
@@ -50,5 +54,23 @@ function sendMessage(e) {
 }
 
 socket.on('message', ({ author, content }) => addMessage(author, content))
-loginForm.addEventListener('submit', login);
-addMessageForm.addEventListener('submit', sendMessage);
+socket.on('newUser', ({ author }) => {
+  if (author !== userName) {
+    addMessage("Chat Bot", `<i>${author} has joined the conversation!</i>`, true);
+  }
+});
+
+socket.on('removeUser', ({ author, userName }) => {
+  if (userName === userNameInput.value) {
+    alert('You have been disconnected from the chat');
+    loginForm.classList.add("show");
+    messagesSection.classList.remove("show");
+    return;
+  }
+
+  const message = `${author} has left the conversation... :(`;
+  addMessage('Chat Bot', message, true);
+});
+
+loginForm.addEventListener("submit", login);
+addMessageForm.addEventListener("submit", sendMessage);

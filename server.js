@@ -26,6 +26,7 @@ io.on('connection', (socket) => {
     console.log(name + ' has joined with socket id ' + socket.id);
     users.push({ name: name, id: socket.id });
     console.log(users);
+    socket.broadcast.emit('newUser', { author: name, content: `${name} has joined the conversation!` });
     io.emit('users', users);
   });
 
@@ -35,6 +36,8 @@ io.on('connection', (socket) => {
     if (index !== -1) {
       const name = users[index].name;
       users.splice(index, 1);
+      const message = `${name} has left the conversation... :(`;
+      io.emit('removeUser', { author: 'Chat Bot', content: message, userName: name });
       io.emit('users', users);
       console.log(name + ' has disconnected');
     }
